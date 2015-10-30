@@ -20,6 +20,7 @@ module ::PanelGroups
       self.update_from_panel_entry name, external_id
     end
    
+    ActiveRecord::Connection.execute "UPDATE groups g SET user_count = (SELECT COUNT(user_id) FROM group_users gu WHERE gu.group_id = g.id)"
 
     # ldap_group_names = Array.new
 #     ldap.search(:base => base_dn) do |entry|
@@ -59,7 +60,6 @@ module ::PanelGroups
     
     group.users = members
     group.save!
-    group.update_attribute(:user_count, members.count)
   end
 
 
