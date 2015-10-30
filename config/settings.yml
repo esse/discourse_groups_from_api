@@ -1,0 +1,4 @@
+ldap_groups:
+  panel_groups_enabled: true
+  panel_uri: localhost
+  panel_token: XXX
