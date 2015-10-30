@@ -20,7 +20,9 @@ module ::PanelGroups
       self.update_from_panel_entry name, external_id
     end
    
-    ActiveRecord::Connection.execute "UPDATE groups g SET user_count = (SELECT COUNT(user_id) FROM group_users gu WHERE gu.group_id = g.id)"
+    query = "UPDATE groups g SET user_count = (SELECT COUNT(user_id) FROM group_users gu WHERE gu.group_id = g.id)"
+   
+    ActiveRecord::Base.connection_pool.with_connection { |con| con.exec_query(query) }
 
     # ldap_group_names = Array.new
 #     ldap.search(:base => base_dn) do |entry|
