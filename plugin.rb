@@ -52,12 +52,13 @@ module ::PanelGroups
       puts "panel_group: Creating new group '#{g_name}' for external '#{name}'"
 
       group = Group.new name: g_name
-      group.visible = false
+      group.visible = true
       group.custom_fields['external_id'] = external_id
       group.save!
     end
     
     group.users = members
+    group.user_count = members.count
     group.save!
   end
 
