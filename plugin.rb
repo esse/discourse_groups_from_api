@@ -1,9 +1,10 @@
-# name: LDAP groups
-# about: Synchronize groups with LDAP
-# version: 0.1
-# authors: Damian Hofmann
+# name: Panel groups
+# about: Synchronize groups with API
+# version: 0.0.1
+# authors: Piotr Szmielew
 
 require 'open-uri'
+require 'json'
 
 module ::PanelGroups
   def self.connect
@@ -16,7 +17,7 @@ module ::PanelGroups
     groups = JSON.parse(open(self.connect() + "/api/groups/groups?token=" + SiteSetting.panel_token).read)
     
     groups.each_pair do |name, external_id|
-      self.update_from_panel_entry
+      self.update_from_panel_entry name, external_id
     end
    
 
