@@ -41,7 +41,6 @@ module ::PanelGroups
       User.find record.user_id
     end
     members.compact! # remove nils from users not in discourse
-    return if members.empty?
 
     # Find existing group or create a new one
     field = GroupCustomField.find_by(name: 'external_id', 
