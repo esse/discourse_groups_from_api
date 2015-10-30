@@ -59,8 +59,7 @@ module ::PanelGroups
     
     group.users = members
     group.save!
-    group.user_count = members.count
-    group.save!
+    group.update_attribute(:user_count, members.count)
   end
 
 
