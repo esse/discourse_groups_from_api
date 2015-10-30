@@ -58,6 +58,7 @@ module ::PanelGroups
     end
     
     group.users = members
+    group.save!
     group.user_count = members.count
     group.save!
   end
