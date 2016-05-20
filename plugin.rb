@@ -14,6 +14,8 @@ module ::PanelGroups
   def self.update_groups!
     return unless SiteSetting.panel_groups_enabled
     
+    @groups_to_clear = Group.where(name: ['stazysta', 'sympatyk']).pluck(:id)
+    
     groups = JSON.parse(open(self.connect() + "/api/groups/groups?token=" + SiteSetting.panel_token).read)
     
     groups.each_pair do |name, external_id|
@@ -48,20 +50,26 @@ module ::PanelGroups
     # Find existing group or create a new one
     field = GroupCustomField.find_by(name: 'external_id', 
                                      value: external_id)
-    if field and field.group
-      group = field.group
-    else
-      g_name = UserNameSuggester.suggest(name)
-      puts "panel_group: Creating new group '#{g_name}' for external '#{name}'"
+    ActiveRecord::Base.transaction do 
+      if field and field.group
+        group = field.group
+      else
+        g_name = UserNameSuggester.suggest(name)
+        puts "panel_group: Creating new group '#{g_name}' for external '#{name}'"
 
-      group = Group.new name: g_name
-      group.visible = true
-      group.custom_fields['external_id'] = external_id
+        group = Group.new name: g_name
+        group.visible = true
+        group.custom_fields['external_id'] = external_id
+        group.save!
+      end
+      if @groups_to_clear.include? group.id
+        (group.users - members).each do |member|
+          member.title = '' if member.title = group.title
+          member.save!
+        end
+      group.users = members
       group.save!
     end
-    
-    group.users = members
-    group.save!
   end
 
 
